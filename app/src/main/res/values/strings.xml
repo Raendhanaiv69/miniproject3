@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">miniproject3</string>
+    <string name="app_name">Taekwondo</string>
+    <string name="gambar">Gambar</string>
+    <string name="error">Gagal memuat data.. Koneksi error.</string>
+    <string name="try_again">Coba lagi</string>
+    <string name="profil">Profil</string>
+    <string name="tutup">Tutup</string>
+    <string name="logout">Logout</string>
+    <string name="tambah_hewan">Tambah Gerakan</string>
+    <string name="nama_gerakan">Nama Gerakan dalam Korea</string>
+    <string name="arti_gerakan">Nama Gerakan dalam indonesia</string>
+    <string name="batal">Batal</string>
+    <string name="simpan">Simpan</string>
+    <string name="hapus"> Hapus</string>
+    <string name="account_circle">akun bulat</string>
+    <string name="tombol_batal">batal</string>
+    <string name="tombol_hapus">hapus</string>
 </resources>
