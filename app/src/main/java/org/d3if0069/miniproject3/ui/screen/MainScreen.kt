@@ -10,7 +10,6 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,9 +19,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -32,7 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -99,7 +96,6 @@ fun MainScreen() {
     var showDialog by remember { mutableStateOf(false) }
     var showTkdDialog by remember { mutableStateOf(false) }
 
-
     var bitmap: Bitmap? by remember {
         mutableStateOf(null)
     }
@@ -112,11 +108,14 @@ fun MainScreen() {
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(id = R.string.app_name))
+                    Text(text = stringResource(id = R.string.app_name),
+                        fontWeight = FontWeight.Bold
+                    )
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = Color(0xFF800000),
-                    titleContentColor = Color.Black,
+                    titleContentColor = Color.White,
+
                 ),
                 actions = {
                     IconButton(onClick = {
@@ -130,7 +129,7 @@ fun MainScreen() {
                         Icon(
                             painter = painterResource(R.drawable.baseline_account_circle_24),
                             contentDescription = stringResource(R.string.profil),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = Color.White
                         )
                     }
                 }
@@ -140,16 +139,19 @@ fun MainScreen() {
             FloatingActionButton(onClick = {
                 val options = CropImageContractOptions(
                     null, CropImageOptions(
-                        imageSourceIncludeGallery = false,
+                        imageSourceIncludeGallery = true,
                         imageSourceIncludeCamera = true,
                         fixAspectRatio = true
                     )
                 )
                 launcher.launch(options)
-            }) {
+            },
+                containerColor = Color(0xFF800000)
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.tambah_hewan)
+                    contentDescription = stringResource(id = R.string.tambah_Gerakan),
+                    tint = Color.White
                 )
             }
         }
@@ -180,7 +182,7 @@ fun MainScreen() {
 }
 
 @Composable
-fun ScreenContent(viewModel: MainViewModel,userId: String, modifier: Modifier) {
+fun ScreenContent(viewModel: MainViewModel, userId: String, modifier: Modifier) {
     val data by viewModel.data
     val status by viewModel.status.collectAsState()
 
@@ -198,18 +200,17 @@ fun ScreenContent(viewModel: MainViewModel,userId: String, modifier: Modifier) {
             }
         }
         ApiStatus.SUCCESS -> {
-            LazyVerticalGrid (
+            LazyColumn(
                 modifier = modifier
                     .fillMaxSize()
                     .padding(4.dp),
-                columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                items(data){tkd ->
-                    ListItem(tkd = tkd, onDelete = {tkdId ->
+                items(data) { tkd ->
+                    ListItem(tkd = tkd, onDelete = { tkdId ->
                         Log.d("ScreenContent", "Deleting tkd with ID: $tkdId")
                         viewModel.deleteData(userId, tkdId)
-                    } )
+                    })
                 }
             }
         }
@@ -221,7 +222,7 @@ fun ScreenContent(viewModel: MainViewModel,userId: String, modifier: Modifier) {
             ) {
                 Text(text = stringResource(id = R.string.error))
                 Button(
-                    onClick = {viewModel.retrieveData(userId)},
+                    onClick = { viewModel.retrieveData(userId) },
                     modifier = Modifier.padding(top = 16.dp),
                     contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
                 ) {
@@ -251,39 +252,49 @@ fun ListItem(tkd: Tkd, onDelete: (String) -> Unit) {
             .border(1.dp, Color.Gray),
         contentAlignment = Alignment.BottomCenter
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(TkdApi.getTkdUrl(tkd.imageId))
-                .crossfade(true)
-                .build(),
-            contentDescription = stringResource(R.string.gambar, tkd.nama_gerakan),
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(id = R.drawable.loading_img),
-            error = painterResource(id = R.drawable.baseline_broken_image_24),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)
-        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp)
-                .background(Color(red = 0f, green = 0f, blue = 0f, alpha = 0.5f))
                 .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(
+                modifier = Modifier.weight(1f).padding(1.dp)
+            ) {
+                Text(
+                    text = "Nama Gerakan",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = Color(0xFF800000),
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
                 Text(
                     text = tkd.nama_gerakan,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    fontSize = 18.sp,
+                    color = Color(0xFF800000)
                 )
                 Text(
                     text = tkd.arti_gerakan,
                     fontStyle = FontStyle.Italic,
-                    fontSize = 14.sp,
-                    color = Color.White
+                    fontSize = 18.sp,
+                    color = Color(0xFF800000)
+                )
+            }
+            Box(
+                modifier = Modifier.weight(1f).padding(4.dp)
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(TkdApi.getTkdUrl(tkd.imageId))
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = stringResource(R.string.gambar, tkd.nama_gerakan),
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.loading_img),
+                    error = painterResource(id = R.drawable.baseline_broken_image_24),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
             IconButton(onClick = {
@@ -292,8 +303,7 @@ fun ListItem(tkd: Tkd, onDelete: (String) -> Unit) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "",
-                    tint = Color.White
-
+                    tint = Color.Red
                 )
             }
         }
@@ -375,7 +385,6 @@ private fun getCroppedImage(
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true )
-
 @Composable
 fun ScreenPreview() {
     Miniproject3Theme {
